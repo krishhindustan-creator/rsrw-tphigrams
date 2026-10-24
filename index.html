@@ -1,0 +1,57 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Cache-Control" content="no-cache"><meta http-equiv="Pragma" content="no-cache">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>IMD RS/RW T-phi gram Archive</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--fg:#14202b;--mut:#5a6b7a;--line:#d5dde5;--acc:#1f5fa8;--accfg:#fff;--chip:#e8eef4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f151b;--card:#18212a;--fg:#e4ebf1;--mut:#93a4b3;--line:#2b3946;--acc:#7fb1ea;--accfg:#0f151b;--chip:#1f2b36}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px "Segoe UI",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+h1{font-size:18px;margin:0 12px 0 0}select,input,button{font:inherit;color:var(--fg);background:var(--chip);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+button{cursor:pointer}button[aria-pressed=true]{background:var(--acc);color:var(--accfg);border-color:var(--acc)}button:disabled{opacity:.35;cursor:default}
+.seg{display:flex;gap:4px}.mut{color:var(--mut);font-size:12px}main{padding:16px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;cursor:pointer;text-align:left;color:inherit}
+.c img{width:100%;height:250px;object-fit:cover;object-position:top;border-radius:4px;background:#fff;display:block}
+.c b{display:block;margin-top:6px}.c span{font-size:12px;color:var(--mut)}
+#viewer{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;z-index:10;overflow:auto;padding:12px}
+#viewer.on{display:block}#viewer .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:0}
+#viewer img{display:block;margin:0 auto;max-width:min(1000px,100%);background:#fff;border-radius:4px}
+.empty{padding:40px;text-align:center;color:var(--mut)}
+</style></head><body>
+<header><h1>IMD RS/RW T-phi grams</h1>
+<label>View <select id="mode"><option value="day">All stations, one ascent</option><option value="stn">One station, all dates</option></select></label>
+<span id="dayctl"><select id="date"></select> <span class="seg" style="display:inline-flex"><button id="h00">00 UTC</button><button id="h12">12 UTC</button></span></span>
+<span id="stnctl" hidden><select id="stn"></select></span>
+<input id="q" placeholder="Filter station…" size="14"><span class="mut" id="info"></span><span class="mut">updated 24 Oct 2026 10:27 IST</span></header>
+<main><div class="grid" id="grid"></div></main>
+<div id="viewer"><div class="bar"><button id="prev">◀ Prev</button><button id="close">Close</button><button id="next">Next ▶</button></div><img id="big" alt=""></div>
+<script src="archive.js?v=68bf896f9b"></script>
+<script>
+const A=window.ARCHIVE||{}, keys=Object.keys(A).sort().reverse(), dates=[...new Set(keys.map(k=>k.slice(0,8)))];
+const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], fmt=d=>`${+d.slice(6)} ${M[+d.slice(4,6)-1]} ${d.slice(0,4)}`;
+const $=id=>document.getElementById(id); let hour='00', list=[], cur=0;
+const stations={}; keys.forEach(k=>A[k].forEach(([ix,nm])=>stations[ix]=nm));
+$('date').innerHTML=dates.map(d=>`<option value="${d}">${fmt(d)}</option>`).join('');
+$('stn').innerHTML=Object.keys(stations).sort((a,b)=>stations[a].localeCompare(stations[b])).map(i=>`<option value="${i}">${stations[i]} (${i})</option>`).join('');
+function render(){
+  const day=$('mode').value==='day', q=$('q').value.trim().toLowerCase();
+  $('dayctl').hidden=!day; $('stnctl').hidden=day;
+  if(day){const d=$('date').value; ['00','12'].forEach(h=>{const b=$('h'+h);b.disabled=!A[d+'_'+h];b.setAttribute('aria-pressed',h===hour)});
+    if(!A[d+'_'+hour]) hour=A[d+'_00']?'00':'12';
+    ['00','12'].forEach(h=>$('h'+h).setAttribute('aria-pressed',h===hour));
+    list=(A[d+'_'+hour]||[]).map(([ix,nm,f])=>({ix,nm,f,sub:`${hour} UTC · ${fmt(d)}`}));}
+  else{const s=$('stn').value; list=keys.filter(k=>A[k].some(r=>r[0]===s)).map(k=>{const r=A[k].find(r=>r[0]===s);return{ix:s,nm:r[1],f:r[2],sub:`${k.slice(9)} UTC · ${fmt(k.slice(0,8))}`}});}
+  if(q) list=list.filter(o=>(o.nm+' '+o.ix).toLowerCase().includes(q));
+  $('info').textContent=`${list.length} chart${list.length===1?'':'s'} · ${keys.length} ascents archived`;
+  $('grid').innerHTML=list.length?list.map((o,i)=>`<button class="c" data-i="${i}"><img loading="lazy" src="${o.f}" alt="${o.nm}"><b>${o.nm}</b><span>${o.ix} · ${o.sub}</span></button>`).join(''):'<div class="empty">No charts yet.</div>';
+  try{localStorage.setItem('rsrw',JSON.stringify({m:$('mode').value,d:$('date').value,h:hour,s:$('stn').value}))}catch(e){}
+}
+function show(i){cur=(i+list.length)%list.length;$('big').src=list[cur].f;$('viewer').classList.add('on')}
+$('grid').onclick=e=>{const c=e.target.closest('.c');if(c)show(+c.dataset.i)};
+$('prev').onclick=()=>show(cur-1);$('next').onclick=()=>show(cur+1);$('close').onclick=()=>$('viewer').classList.remove('on');
+document.onkeydown=e=>{if(!$('viewer').classList.contains('on'))return;if(e.key==='ArrowLeft')show(cur-1);if(e.key==='ArrowRight')show(cur+1);if(e.key==='Escape')$('close').onclick()};
+['mode','date','stn'].forEach(id=>$(id).onchange=render);$('q').oninput=render;
+$('h00').onclick=()=>{hour='00';render()};$('h12').onclick=()=>{hour='12';render()};
+try{const s=JSON.parse(localStorage.getItem('rsrw')||'{}');if(s.m)$('mode').value=s.m;if(s.s&&stations[s.s])$('stn').value=s.s}catch(e){}
+if(keys.length){$('date').value=keys[0].slice(0,8);hour=keys[0].slice(9)}
+render();
+</script></body></html>
