@@ -1,0 +1,223 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Cache-Control" content="no-cache"><meta http-equiv="Pragma" content="no-cache">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>IMD RS/RW T-phi gram Archive</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--fg:#14202b;--mut:#5a6b7a;--line:#d5dde5;--acc:#1f5fa8;--accfg:#fff;--chip:#e8eef4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f151b;--card:#18212a;--fg:#e4ebf1;--mut:#93a4b3;--line:#2b3946;--acc:#7fb1ea;--accfg:#0f151b;--chip:#1f2b36}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px "Segoe UI",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+h1{font-size:18px;margin:0 12px 0 0}select,input,button{font:inherit;color:var(--fg);background:var(--chip);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+button{cursor:pointer}button[aria-pressed=true]{background:var(--acc);color:var(--accfg);border-color:var(--acc)}button:disabled{opacity:.35;cursor:default}
+.seg{display:flex;gap:4px}.mut{color:var(--mut);font-size:12px}main{padding:16px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;cursor:pointer;text-align:left;color:inherit}
+.c img{width:100%;height:250px;object-fit:cover;object-position:top;border-radius:4px;background:#fff;display:block}
+.c b{display:block;margin-top:6px}.c span{font-size:12px;color:var(--mut)}
+#viewer{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;z-index:10;overflow:auto;padding:12px}
+#viewer.on{display:block}#viewer .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:0}
+#viewer img{display:block;margin:0 auto;max-width:min(1000px,100%);background:#fff;border-radius:4px}
+.empty{padding:40px;text-align:center;color:var(--mut)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}.tabs button{font-weight:600}
+.nwpbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:0 0 14px}
+.nwpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.nwpgrid .c img{height:220px;object-fit:contain;object-position:center}
+.files{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}.files a{color:var(--acc);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--card)}
+.note{margin:0 0 12px;padding:8px 10px;border-left:3px solid var(--acc);background:var(--card);border-radius:4px;font-size:13px}
+.cmpwrap{overflow-x:auto;margin:0 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.cmp{border-collapse:collapse;font-size:12.5px;min-width:100%}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:center;vertical-align:middle}
+.cmp th{background:var(--acc);color:var(--accfg);white-space:nowrap}.cmp td:first-child{text-align:left;font-weight:700;white-space:nowrap;background:var(--chip)}
+.cmp td.sel{background:rgba(255,200,0,.18);font-weight:700}.cmpt{font-weight:700;margin:0 0 6px}
+#nv{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;z-index:20;overflow:auto;padding:12px}
+#nv.on{display:block}#nv .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:0}
+#nv img{display:block;margin:0 auto;max-width:min(1400px,100%);background:#fff;border-radius:4px}
+#nv .cap{color:#fff;text-align:center;margin:0 0 8px;font-size:13px}
+.xlink{font-weight:700;font-size:16px;color:var(--acc);text-decoration:none;border:2px solid var(--acc);border-radius:6px;padding:5px 12px}.xlink:hover{background:var(--acc);color:var(--accfg)}
+
+.dlbar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:0 0 6px}
+.dlleg{display:flex;gap:14px;align-items:center;font-size:12.5px}.dlleg span{display:inline-flex;align-items:center}
+.dlleg i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:5px}
+.dlh{font-size:15px;font-weight:700;margin:20px 0 8px}
+.dlgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.dlc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.dlc b{display:block;font-size:12.5px;line-height:1.25;min-height:2.5em}
+.dlc .now{font-size:12px;color:var(--mut);margin:2px 0 4px}
+.dlc svg{width:100%;height:auto;display:block}
+.dlc .ax{stroke:var(--mut);stroke-width:1}.dlc .gr{stroke:var(--line);stroke-width:.6;stroke-dasharray:3 3}
+.dlc text{fill:var(--mut);font-size:9.5px}
+.dl00{stroke:var(--acc);fill:var(--acc)}.dl12{stroke:#d9822b;fill:#d9822b}
+main#delhi{scroll-margin-top:100vh}
+.dlpick{display:inline-flex;gap:4px;align-items:center}.dlpick select{max-width:70vw}
+.dlc path{fill:none;stroke-width:1.8}.dlc circle.fl{stroke:#c0392b;stroke-width:1.8;fill:var(--card)}
+</style></head><body>
+<header><h1 id="ttl">IMD RS/RW T-phi grams</h1>
+<nav class="tabs"><button id="t_tphi">T-phi grams</button><button id="t_delhi">Station Indices (7 days)</button><button id="t_ens">ECMWF ENS</button><button id="t_mme">IMD MME</button><button id="t_adeck">A-Deck</button></nav>
+<a class="xlink" href="https://krishhindustan-creator.github.io/cyclone-nwp/#mme">Cyclone NWP ➡</a>
+<span id="tphictl" style="display:contents">
+<label>View <select id="mode"><option value="day">All stations, one ascent</option><option value="stn">One station, all dates</option></select></label>
+<span id="dayctl"><select id="date"></select> <span class="seg" style="display:inline-flex"><button id="h00">00 UTC</button><button id="h12">12 UTC</button></span></span>
+<span id="stnctl" hidden><select id="stn"></select></span>
+<input id="q" placeholder="Filter station…" size="14"><span class="mut" id="info"></span><span class="mut">updated 14 Nov 2026 21:42 IST</span></span><a class="xlink" href="https://hits.sh/krishhindustan-creator.github.io/rsrw-tphigrams.svg" target="_blank" rel="noopener" style="margin-left:auto"><img alt="Page views" src="https://hits.sh/krishhindustan-creator.github.io/rsrw-tphigrams.svg?style=flat-square&label=Page%20views&color=0b5cad&labelColor=14202b"></a></header>
+<main id="tphi"><div class="grid" id="grid"></div></main>
+<main id="delhi" hidden><div class="dlbar"><b>Thermodynamic indices, last 7 days</b>
+<span class="dlpick"><button id="dlprev" title="Previous station" aria-label="Previous station">◀</button><select id="dlstn" aria-label="Station"></select><button id="dlnext" title="Next station" aria-label="Next station">▶</button></span>
+<span class="dlleg"><span><i style="background:var(--acc)"></i>00 UTC</span><span><i style="background:#d9822b"></i>12 UTC</span><span><i style="width:8px;height:8px;border:2px solid #c0392b;border-radius:50%"></i>data-check flag</span></span></div>
+<div class="mut" id="dlinfo" style="margin-bottom:6px"></div><div id="dlbody"></div></main>
+<main id="nwp" hidden><div class="nwpbar"><b id="nwptitle"></b><select id="nwprun"></select><span class="mut" id="nwpinfo"></span></div>
+<div id="nwpnote"></div><div id="nwpcmp"></div><div class="nwpgrid" id="nwpgrid"></div><div class="files" id="nwpfiles"></div></main>
+<div id="nv"><div class="bar"><button id="nvprev">◀ Prev</button><button id="nvclose">Close</button><button id="nvnext">Next ▶</button></div><div class="cap" id="nvcap"></div><img id="nvimg" alt=""></div>
+<div id="viewer"><div class="bar"><button id="prev">◀ Prev</button><button id="close">Close</button><button id="next">Next ▶</button></div><img id="big" alt=""></div>
+<script src="archive.js?v=27da8b55a7"></script>
+<script>
+(function(){
+  const g=id=>document.getElementById(id), MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], DAY=864e5;
+  let D=null, stn=null;
+  const tm=k=>Date.UTC(+k.slice(0,4),+k.slice(4,6)-1,+k.slice(6,8),+k.slice(9,11));
+  const fv=v=>v==null?'n/a':(Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=10?v.toFixed(1):v.toFixed(2));
+  const dm=t=>{const d=new Date(t);return d.getUTCDate()+' '+MON[d.getUTCMonth()]};
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const tc=s=>String(s).toLowerCase().replace(/(^|[\s(\/-])([a-z])/g,(a,b,c)=>b+c.toUpperCase());
+  function chart(m,use,recs,W,E){
+    const w=300,h=150,ml=44,mr=8,mt=8,mb=22,px=x=>ml+(x-W)/(E-W)*(w-ml-mr);
+    const S={'00':[],'12':[]}; let lo=Infinity,hi=-Infinity;
+    use.forEach(k=>{const v=recs[k].v[m.k],hh=k.slice(9,11); if(v==null||!S[hh]) return;
+      S[hh].push({t:tm(k),v:v,f:!!recs[k].flag}); lo=Math.min(lo,v); hi=Math.max(hi,v)});
+    if(!isFinite(lo)) return '<div class="now">no value in this period</div>';
+    let a=lo,z=hi; const rng=(z-a)||Math.abs(z)*0.2||1;
+    if(a>=0&&a<0.4*z) a=0; else a-=rng*0.1;
+    if(z<=0&&z>0.4*a) z=0; else z+=rng*0.1;
+    const py=v=>mt+(z-v)/(z-a)*(h-mt-mb);
+    let s='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(m.t)+'">';
+    [a,(a+z)/2,z].forEach(v=>{s+='<line class="gr" x1="'+ml+'" x2="'+(w-mr)+'" y1="'+py(v).toFixed(1)+'" y2="'+py(v).toFixed(1)+'"/><text x="'+(ml-4)+'" y="'+(py(v)+3).toFixed(1)+'" text-anchor="end">'+fv(v)+'</text>'});
+    for(let d=W;d<E;d+=DAY){const x=px(d).toFixed(1); s+='<line class="gr" x1="'+x+'" x2="'+x+'" y1="'+mt+'" y2="'+(h-mb)+'"/><text x="'+x+'" y="'+(h-7)+'" text-anchor="middle">'+dm(d)+'</text>'}
+    s+='<line class="ax" x1="'+ml+'" x2="'+ml+'" y1="'+mt+'" y2="'+(h-mb)+'"/><line class="ax" x1="'+ml+'" x2="'+(w-mr)+'" y1="'+(h-mb)+'" y2="'+(h-mb)+'"/>';
+    ['00','12'].forEach(hh=>{
+      const P=S[hh]; let d='',prev=null;
+      P.forEach(p=>{d+=(prev&&p.t-prev.t<=30*36e5?'L':'M')+px(p.t).toFixed(1)+' '+py(p.v).toFixed(1)+' '; prev=p});
+      if(d) s+='<path class="dl'+hh+'" d="'+d+'"/>';
+      P.forEach(p=>{s+='<circle class="dl'+hh+(p.f?' fl':'')+'" cx="'+px(p.t).toFixed(1)+'" cy="'+py(p.v).toFixed(1)+'" r="3"><title>'+dm(p.t)+' '+hh+' UTC: '+fv(p.v)+(p.f?' (data-check flag)':'')+'</title></circle>'});
+    });
+    return s+'</svg>';
+  }
+  function recsOf(s){                       // {key:{v:{SBCAPE:..}, flag}} for one station
+    const R=(D.records||{})[s]||{}, K=D.keys||[], o={};
+    Object.keys(R).forEach(k=>{const v={}; K.forEach((x,i)=>v[x]=R[k].v[i]); o[k]={v:v,flag:R[k].f}}); return o}
+  function list(){
+    const N=D.names||{}; return Object.keys(D.records||{}).sort((a,b)=>String(N[a]||a).localeCompare(String(N[b]||b)))}
+  function pick(){
+    const L=list(), sel=g('dlstn'), N=D.names||{};
+    if(!stn||!L.includes(stn)){let s=null; try{s=localStorage.getItem('rsrwstn')}catch(e){}
+      stn=L.includes(window.DL_STN)?window.DL_STN:L.includes(s)?s:L.includes('42182')?'42182':L[0]}
+    sel.innerHTML=L.map(s=>'<option value="'+s+'">'+esc(tc(N[s]||('Station '+s)))+' ('+s+')</option>').join(''); sel.value=stn; return L}
+  function draw(){
+    const body=g('dlbody'), meta=(D&&D.meta)||[];
+    const L=D?pick():[];
+    if(!L.length||!meta.length){body.innerHTML='<div class="empty">No station indices saved yet. The history fills in with each scheduled update.</div>'; g('dlinfo').textContent=''; return}
+    const recs=recsOf(stn), keys=Object.keys(recs).sort(), N=D.names||{};
+    let last=''; L.forEach(s=>Object.keys(D.records[s]).forEach(k=>{if(k>last) last=k}));   // newest ascent of any station
+    const L0=tm(last), d0=L0-L0%DAY, W=d0-6*DAY, E=d0+DAY, use=keys.filter(k=>{const t=tm(k);return t>=W&&t<E});
+    const nm=tc(N[stn]||('Station '+stn))+' ('+stn+')';
+    try{localStorage.setItem('rsrwstn',stn)}catch(e){}
+    setTimeout(()=>{if(!g('delhi').hidden) try{history.replaceState(null,'','#delhi-'+stn)}catch(e){}},0);
+    if(!use.length){g('dlinfo').textContent=nm+': no ascent in '+dm(W)+' to '+dm(d0); body.innerHTML='<div class="empty">'+esc(nm)+' has not reported in the last 7 days.</div>'; return}
+    g('dlinfo').textContent=nm+' · '+use.length+' ascents, '+dm(W)+' to '+dm(d0)+' · latest '+use[use.length-1].slice(9,11)+' UTC '+dm(tm(use[use.length-1]))+' · red ring = data-check flag on that ascent (see its T-phi chart)';
+    const groups=[]; meta.forEach(m=>{let G=groups.find(x=>x.n===m.g); if(!G){G={n:m.g,items:[]};groups.push(G)} G.items.push(m)});
+    body.innerHTML=groups.map(G=>'<div class="dlh">'+esc(G.n)+'</div><div class="dlgrid">'+G.items.map(m=>{
+      const k=[...use].reverse().find(q=>recs[q].v[m.k]!=null);
+      const now=k?'Latest '+fv(recs[k].v[m.k])+' ('+dm(tm(k))+' '+k.slice(9,11)+' UTC)':'no value';
+      return '<div class="dlc"><b>'+esc(m.t)+'</b><div class="now">'+now+'</div>'+chart(m,use,recs,W,E)+'</div>'}).join('')+'</div>').join('');
+  }
+  g('dlstn').onchange=()=>{stn=g('dlstn').value; draw()};
+  const step=n=>{if(!D) return; const L=list(); if(!L.length) return; stn=L[(L.indexOf(stn)+n+L.length)%L.length]; draw()};
+  g('dlprev').onclick=()=>step(-1); g('dlnext').onclick=()=>step(1);
+  window.DELHI_SHOW=function(){
+    if(window.DL_STN){stn=window.DL_STN; window.DL_STN=null}
+    if(D) return draw();
+    fetch('station_indices.json?t='+Date.now()).then(r=>{if(!r.ok) throw 0; return r.json()})
+      .then(j=>{D=j;draw()}).catch(()=>{D={records:{},meta:[],names:{}};draw();D=null});
+  };
+})();
+</script>
+
+<script>
+const A=window.ARCHIVE||{}, keys=Object.keys(A).sort().reverse(), dates=[...new Set(keys.map(k=>k.slice(0,8)))];
+const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], fmt=d=>`${+d.slice(6)} ${M[+d.slice(4,6)-1]} ${d.slice(0,4)}`;
+const $=id=>document.getElementById(id); let hour='00', list=[], cur=0;
+const stations={}; keys.forEach(k=>A[k].forEach(([ix,nm])=>stations[ix]=nm));
+$('date').innerHTML=dates.map(d=>`<option value="${d}">${fmt(d)}</option>`).join('');
+$('stn').innerHTML=Object.keys(stations).sort((a,b)=>stations[a].localeCompare(stations[b])).map(i=>`<option value="${i}">${stations[i]} (${i})</option>`).join('');
+function render(){
+  const day=$('mode').value==='day', q=$('q').value.trim().toLowerCase();
+  $('dayctl').hidden=!day; $('stnctl').hidden=day;
+  if(day){const d=$('date').value; ['00','12'].forEach(h=>{const b=$('h'+h);b.disabled=!A[d+'_'+h];b.setAttribute('aria-pressed',h===hour)});
+    if(!A[d+'_'+hour]) hour=A[d+'_00']?'00':'12';
+    ['00','12'].forEach(h=>$('h'+h).setAttribute('aria-pressed',h===hour));
+    list=(A[d+'_'+hour]||[]).map(([ix,nm,f])=>({ix,nm,f,sub:`${hour} UTC · ${fmt(d)}`}));}
+  else{const s=$('stn').value; list=keys.filter(k=>A[k].some(r=>r[0]===s)).map(k=>{const r=A[k].find(r=>r[0]===s);return{ix:s,nm:r[1],f:r[2],sub:`${k.slice(9)} UTC · ${fmt(k.slice(0,8))}`}});}
+  if(q) list=list.filter(o=>(o.nm+' '+o.ix).toLowerCase().includes(q));
+  $('info').textContent=`${list.length} chart${list.length===1?'':'s'} · ${keys.length} ascents archived`;
+  $('grid').innerHTML=list.length?list.map((o,i)=>`<button class="c" data-i="${i}"><img loading="lazy" src="${o.f}" alt="${o.nm}"><b>${o.nm}</b><span>${o.ix} · ${o.sub}</span></button>`).join(''):'<div class="empty">No charts yet.</div>';
+  try{localStorage.setItem('rsrw',JSON.stringify({m:$('mode').value,d:$('date').value,h:hour,s:$('stn').value}))}catch(e){}
+}
+function show(i){cur=(i+list.length)%list.length;$('big').src=list[cur].f;$('viewer').classList.add('on')}
+$('grid').onclick=e=>{const c=e.target.closest('.c');if(c)show(+c.dataset.i)};
+$('prev').onclick=()=>show(cur-1);$('next').onclick=()=>show(cur+1);$('close').onclick=()=>$('viewer').classList.remove('on');
+document.onkeydown=e=>{if(!$('viewer').classList.contains('on'))return;if(e.key==='ArrowLeft')show(cur-1);if(e.key==='ArrowRight')show(cur+1);if(e.key==='Escape')$('close').onclick()};
+['mode','date','stn'].forEach(id=>$(id).onchange=render);$('q').oninput=render;
+$('h00').onclick=()=>{hour='00';render()};$('h12').onclick=()=>{hour='12';render()};
+try{const s=JSON.parse(localStorage.getItem('rsrw')||'{}');if(s.m)$('mode').value=s.m;if(s.s&&stations[s.s])$('stn').value=s.s}catch(e){}
+if(keys.length){$('date').value=keys[0].slice(0,8);hour=keys[0].slice(9)}
+render();
+</script>
+<script>
+(function(){
+  const BASE=window.NWP_BASE||'https://krishhindustan-creator.github.io/cyclone-nwp/', g=id=>document.getElementById(id);
+  const NAMES={ens:'ECMWF Ensemble',mme:'IMD MME',adeck:'A-Deck (JTWC model tracks)'};
+  let MAN=null, kind=null, items=[], cur=0;
+  function load(){ if(MAN) return Promise.resolve(MAN);
+    return fetch(BASE+'manifest.json?t='+Date.now()).then(r=>r.json()).then(m=>MAN=m)
+      .catch(()=>{MAN={ens:[],mme:[],adeck:[]};return MAN}); }
+  function draw(){
+    const runs=(MAN&&MAN[kind])||[]; g('nwptitle').textContent=NAMES[kind];
+    if(!runs.length){g('nwprun').innerHTML='';g('nwpgrid').innerHTML='<div class="empty">'+(kind==='adeck'?'No a-deck yet — it appears once JTWC has numbered the system.':'No runs yet — the first one appears after the next scheduled update.')+'</div>';
+      g('nwpfiles').innerHTML='';g('nwpnote').innerHTML='';g('nwpinfo').textContent='';return}
+    const sel=g('nwprun'), keep=sel.value&&runs.some(r=>r.ic===sel.value)?sel.value:runs[0].ic;
+    sel.innerHTML=runs.map(r=>`<option value="${r.ic}">${r.label}</option>`).join(''); sel.value=keep;
+    const run=runs.find(r=>r.ic===keep); items=run.items.map(o=>({...o,f:BASE+o.f}));
+    g('nwpinfo').textContent=`${runs.length} run${runs.length===1?'':'s'} kept (${MAN.keep_days||3} days)`+(MAN.updated?` · updated ${MAN.updated}`:'');
+    g('nwpnote').innerHTML=run.note?`<div class="note">${run.note}</div>`:'';
+    g('nwpcmp').innerHTML=kind==='ens'?cmp(runs,keep):'';
+    g('nwpgrid').innerHTML=items.map((o,i)=>`<button class="c" data-n="${i}"><img loading="lazy" src="${o.f}" alt="${o.t}"><b>${o.t}</b></button>`).join('');
+    g('nwpfiles').innerHTML=(run.files||[]).map(o=>`<a href="${BASE+o.f}" download>⬇ ${o.t}</a>`).join('');
+  }
+  function stats(note){const o={};(note||'').split('<br>').forEach(l=>{const i=l.indexOf(': ');if(i>0)o[l.slice(0,i).trim()]=l.slice(i+2).trim()});return o}
+  function cmp(runs,sel){ if(runs.length<2) return '';
+    const cols=runs.slice(0,6).reverse(), S=cols.map(r=>stats(r.note)), keys=[];   // last 6 runs only
+    S.forEach(o=>Object.keys(o).forEach(k=>{if(!keys.includes(k))keys.push(k)}));
+    if(!keys.length) return '';
+    let h='<div class="cmpt">Comparison of the last '+cols.length+' runs (oldest → newest)</div><div class="cmpwrap"><table class="cmp"><tr><th></th>'+
+      cols.map(r=>'<th>'+r.label.replace(/ 20\d\d$/,'')+'</th>').join('')+'</tr>';
+    keys.forEach(k=>{h+='<tr><td>'+k+'</td>'+S.map((o,i)=>'<td'+(cols[i].ic===sel?' class="sel"':'')+'>'+(o[k]||'–')+'</td>').join('')+'</tr>'});
+    h+='</table></div>'; if(MAN.ens_compare) h+='<div class="files" style="margin:-6px 0 16px"><a href="'+BASE+MAN.ens_compare+'?t='+Date.now()+'" download>⬇ Comparison table (PNG, for WhatsApp)</a></div>';
+    return h }
+  function show(i){cur=(i+items.length)%items.length;g('nvimg').src=items[cur].f;g('nvcap').textContent=items[cur].t;g('nv').classList.add('on')}
+  g('nwpgrid').onclick=e=>{const c=e.target.closest('.c');if(c)show(+c.dataset.n)};
+  g('nvprev').onclick=()=>show(cur-1);g('nvnext').onclick=()=>show(cur+1);g('nvclose').onclick=()=>g('nv').classList.remove('on');
+  document.addEventListener('keydown',e=>{if(!g('nv').classList.contains('on'))return;
+    if(e.key==='ArrowLeft')show(cur-1);if(e.key==='ArrowRight')show(cur+1);if(e.key==='Escape')g('nvclose').onclick()});
+  g('nwprun').onchange=draw;
+  window.NWP_SHOW=function(k){kind=k;load().then(draw)};
+})();
+(function(){
+  const g=id=>document.getElementById(id), T={tphi:'IMD RS/RW T-phi grams',delhi:'Station Indices: Past 7 Days',ens:'ECMWF Ensemble',mme:'IMD MME',adeck:'A-Deck (JTWC model tracks)'};
+  function tab(t){ t=String(t||''); const sp=t.split('-'); if(sp[0]==='delhi'&&sp[1]) window.DL_STN=sp[1]; t=sp[0]; if(!T[t]) t='tphi';
+    ['tphi','delhi','ens','mme','adeck'].forEach(k=>g('t_'+k).setAttribute('aria-pressed',k===t));
+    g('tphi').hidden=t!=='tphi'; g('tphictl').style.display=t==='tphi'?'contents':'none'; g('nwp').hidden=!(t==='ens'||t==='mme'||t==='adeck'); g('delhi').hidden=t!=='delhi';
+    g('ttl').textContent=T[t]; document.title=t==='tphi'?'IMD RS/RW T-phi gram Archive':T[t];
+    if(t==='delhi') window.DELHI_SHOW(); else if(t!=='tphi') window.NWP_SHOW(t);
+    if(location.hash.slice(1)!==t) history.replaceState(null,'','#'+t);
+    try{localStorage.setItem('rsrwtab',t)}catch(e){} }
+  ['tphi','delhi','ens','mme','adeck'].forEach(k=>g('t_'+k).onclick=()=>tab(k));
+  window.addEventListener('hashchange',()=>tab(location.hash.slice(1)));
+  let t0=location.hash.slice(1); if(!t0){try{t0=localStorage.getItem('rsrwtab')||'tphi'}catch(e){t0='tphi'}}
+  tab(t0);
+})();
+</script></body></html>
